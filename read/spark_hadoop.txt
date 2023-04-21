@@ -1,0 +1,859 @@
+Investigating the performance of Hadoop and Spark
+platforms on machine learning algorithms
+Ali Mostafaeipour1 · Amir Jahangard Rafsanjani2 · Mohammad Ahmadi2 ·
+Joshuva Arockia Dhanraj3
+© Springer Science+Business Media, LLC, part of Springer Nature 2020
+Abstract
+One of the most challenging issues in the big data research area is the inability to
+process a large volume of information in a reasonable time. Hadoop and Spark
+are two frameworks for distributed data processing. Hadoop is a very popular and
+general platform for big data processing. Because of the in-memory programming
+model, Spark as an open-source framework is suitable for processing iterative
+algorithms. In this paper, Hadoop and Spark frameworks, the big data processing
+platforms, are evaluated and compared in terms of runtime, memory and network
+usage, and central processor efficiency. Hence, the K-nearest neighbor (KNN) algorithm
+is implemented on datasets with different sizes within both Hadoop and Spark
+frameworks. The results show that the runtime of the KNN algorithm implemented
+on Spark is 4 to 4.5 times faster than Hadoop. Evaluations show that Hadoop uses
+more sources, including central processor and network. It is concluded that the CPU
+in Spark is more effective than Hadoop. On the other hand, the memory usage in
+Hadoop is less than Spark.
+Keywords Big data · Machine learning · MapReduce · Hadoop · Spark · Ganglia
+* Joshuva Arockia Dhanraj
+joshuva1991@gmail.com
+Ali Mostafaeipour
+mostafaei@yazd.ac.ir
+Amir Jahangard Rafsanjani
+jahangard@yazd.ac.ir
+Mohammad Ahmadi
+Ahmadi_m@stu.yazd.ac.ir
+1 Industrial Engineering Department, Yazd University, Yazd, Iran
+2 Computer Engineering Department, Yazd University, Yazd, Iran
+3 Centre for Automation and Robotics (ANRO), Department of Mechanical Engineering,
+Hindustan Institute of Technology and Science, Chennai 603103, India
+A. Mostafaeipour et al.
+1 3
+1 Introduction
+Nowadays, with the growing advancement of technology and Internet, different
+searches have been increased significantly throughout the world. As a result, the volume
+of information generated in the world has grown dramatically, so we have faced
+a new concept called the big data. Big data refer to a large and complex dataset that
+is impossible or difficult to process by traditional information processing tools [1].
+This volume of information is a big challenge in traditional data processing systems.
+In order to cope with this challenge, a variety of cluster computing frameworks
+that aim to support large-scale data on commodity machines have been created [2].
+MapReduce, introduced by Google in 2004, is one of the successful frameworks
+for processing big data, with scalable, reliable, and high fault tolerance features [3].
+Apache Hadoop is an open-source implementation of the MapReduce model. The
+MapReduce model does not maintain data reused and the state of information during
+execution. Therefore, the MapReduce should read duplicate data and intermediate
+results from disk in each epoch so that it is a costly operation because of highdisk
+access, I/O, and unnecessary computing operations. Hadoop is not suitable
+for iterative operations, although it is common in many applications [4]. A Spark
+is a cluster computing framework similar to Hadoop [5] and has been designed to
+eliminate the shortage of Hadoop in iterative operations. Spark introduced a data
+structure called resilient distributed dataset (RDD) through which reused data and
+intermediate results can be stored in the memory of machines in the cluster during
+the execution of iterative processes. It has been proven that this feature has effectively
+improved iterative tasks that require low latency [6]. Figure 1 represents the
+architecture of Watson Studio Local with a Hadoop cluster by using the Execution
+Engine for Apache Hadoop add-on from IBM.
+Fig. 1 Architecture of Watson Studio Local with a Hadoop cluster by using the Execution Engine for
+Apache Hadoop add-on [6]
+1 3
+Investigating the performance of Hadoop and Spark platforms…
+The term “big data,” which has been made popular over the last decade, would be
+frequently applied for referring to very large or complicated datasets that cannot be
+easily analyzed through conventional tools [7]. Even though big data has not been
+accurately defined, the term commonly represents the volume and diversity of datasets
+that question the capability of conventional analytical and processing devices
+for capturing, storing, managing, and analyzing [8].
+There is a common agreement that a big data problem includes a combination of
+the four V’s below:
+• Volume: Enterprises possess a variety of increasing data, readily collecting petabytes
+and surprisingly exabyte.
+• Velocity: For procedures that exhibit a sensitivity to time, including capturing
+frauds, it is necessary to guarantee timetables of detections and actions.
+• Variety: Big data contain several kinds of data, including text, sensor data,
+audios, videos, and operators’ log files.
+• Veracity: Establishing confidence and trust in big data and inferences or deductions
+on the basis of big data, which makes statistical learning theory a crucial
+frame.
+Machine learning is a very promising tool of data sciences, which has been provided
+by investigators for presenting precise predictions through data. It is one of
+the subfields of artificial intelligence that concentrates on the construction of algorithms,
+which are able to learn from and predict from data. Figure 2 shows the
+Apache Spark platform.
+ML deals with the question of how to make a computer system that upgrades in
+automatic ways through experiences [9]. Researchers refer to a ML as the problem
+of gaining knowledge from experience based on a number of tasks and functional
+scales. ML techniques allow users to discover fundamental structures and project
+from big datasets. ML flourishes well-organized learning methods (algorithms),
+rich and or great data, and influential computing contexts. Consequently, ML enjoys
+Fig. 2 Apache Spark platform [8]
+A. Mostafaeipour et al.
+1 3
+considerable potential for data analysis and is one of the crucial parts of big data
+analytics [10].
+Conventionally, ML accomplishes data preprocessing, learning, and evaluating
+phases [11]. Data preprocessing contributes to the preparation of raw data into a
+correct form for later learning stages. It is possible that raw data are unstructured,
+turbulent, deficient, and inconsistent or incompatible. The preprocessing phase
+modifies these data into a form to be applied as inputs for learning via cleaning,
+extracting, transforming, and fusing data. The learning stage selects learning algorithms
+and adjusts model parameters for generating the favorable outputs through
+the preprocessed input data. Moreover, a number of learning techniques, especially
+representational learning, may be applied for data preprocessing. Then, evaluation
+will be done in determining the learned models’ performances. For example, performance
+evaluation of a classifier includes a selection of dataset, performance measurement,
+error estimation, and statistical tests. Evaluation outputs possibly result in
+the adjustment of the parameters of the selected learning algorithms and/or selection
+of various algorithms.
+There are three key kinds of ML, namely supervised, unsupervised learning, and
+reinforcement learning [12]. The learning system in the supervised learning would
+be provided with instances of input–output pairs, and it aims at learning a function,
+which maps inputs to outputs. Supervised machine learning would be frequently
+administered in the area of classification or regression. Example algorithms involve
+support vector machines (SVM), logistic regression, artificial neural network, and
+random forest (RF). Figure 3 represents the block diagram of Hadoop versus Spark.
+SVMs carry out the classification via developing a multidimensional hyperplane,
+which divides variables into groups. The two linear and nonlinear data
+may be applied to the training algorithm. A decision tree is a model splitting
+data variables at discrete cut points that are frequently plotted graphically
+as the branches of a tree. Many times, traditional decision trees possess subpar
+Fig. 3 Hadoop versus Spark [12]
+1 3
+Investigating the performance of Hadoop and Spark platforms…
+predictive capability and are subject to overfitting. Nonetheless, the improved
+decision tree models are also found, including random forest models, which are
+largely followed by higher predictive correctness. One of the forms of the bagged
+tree model is RF models, in which several trees are fused with each other, which
+makes the resulting model a set of numerous trees.
+The system in the unsupervised learning would not be provided with clear
+feedbacks or desired outputs. In fact, it aims at detecting patterns in the inputs.
+As in unsupervised learning, input–output pairs do not provide a reinforcement
+learning system. As supervised learning, the reinforcement learning gives feedback
+on its preceding experiences. Despite the supervised learning, the feedback
+in reinforcement learning is rewarding or punishment related to actions rather
+than intended outputs or clear modification of suboptimal actions. Figure 4 shows
+the MapReduce processing.
+The system in the unsupervised learning would not be provided with clear
+feedbacks or desired outputs. In fact, it aims at detecting patterns in the inputs.
+As in unsupervised learning, input–output pairs do not provide a reinforcement
+learning system. As supervised learning, the reinforcement learning gives feedback
+on its preceding experiences. Despite the supervised learning, the feedback
+in reinforcement learning is rewarding or punishment related to actions rather
+than intended outputs or clear modification of suboptimal actions.
+The novelty of this research work can be summarized as follows: In this paper,
+a comprehensive experiment was performed to evaluate and compare the performance
+between the Hadoop and Spark frameworks. Therefore, the KNN algorithm
+was implemented on datasets with different sizes and the runtime, memory
+and network usage, and efficiency of the CPU of the frameworks were compared.
+The structure of the paper is as follows: In Sect. 2, a review of previous works
+has been done. The Sect. 3 describes Methodology. The results and discussion
+have been analyzed and evaluated in Sect. 4. The conclusion has been discussed
+in Sect. 5.
+Fig. 4 MapReduce processing [12]
+A. Mostafaeipour et al.
+1 3
+2 Literature review
+In 2018, Aziz et al. [13] used the Spark platform to analyze Twitter data. Spark
+platform was analyzed for the Tweets in a short period of time, which is less than
+one second. Through this study, the author has focused on the actual standard
+Hadoop MapReduce’s execution, completion and the execution of Apache Spark’s
+framework as well. Also, to calculate an actual-time data flow applying Spark
+and Hadoop, the experimental simulations are conducted. Moreover, a comparability
+of two executions regarding performance and architecture with an analysis
+to characterize the simulations’ conclusions is introduced and the deficiency and
+drawbacks of applying Hadoop for real-time preparation are discussed as well. It
+is shown that a useful instrument for streaming data in real time is Spark.
+In 2017, Hazarika et al. [14] examined both Spark and Hadoop platforms to study
+theoretical differences and their functional comparison. Their work results indicate
+that Spark is much faster for its cache due to its duplicate queries such as logistic
+regression. Also, the limited cache weakens Spark performance for nonrepetitive
+queries. However, it is much faster for small repetitions from the Hadoop.
+Gopalani et al. [15] compared the Hadoop and Spark platforms, two frameworks
+for big data processing, in 2015. In other words, they implemented
+K-means algorithm, a basic machine learning algorithm, on a dataset containing
+sensor data using Hadoop and Spark platforms and compared the runtime of
+both frameworks. The results indicated that Spark had superiority to the Hadoop
+at runtime. In 2013, Li Guo et al. [2] evaluated Hadoop and Spark platforms in
+terms of memory usage and runtime. For this purpose, PageRank algorithm was
+implemented on several graph datasets. The results indicated that Spark had less
+execution time and more memory usage in comparison with Hadoop.
+In 2014, Wang et al. [16] evaluated MapReduce and Spark in terms of runtime.
+For this purpose, C4.5 algorithm, the basic algorithm for building decision
+tree, was implemented on datasets with different sizes. The results of this paper
+were that when the size of datasets is small, the efficiency of Spark is 950% better
+than the time when Hadoop is used. Additionally, when the size of datasets is
+large, the efficiency of Spark is 73% better than the time when Hadoop is used.
+In 2010, Zaharia et al. [5] compared Hadoop and Spark frameworks using logistic
+regression algorithm. In this research, the author highlighted a specific applications
+class which reapplies a running complex of data through parallel multiple
+movement. That consists of interactive data analysis instruments and a lot
+of iterative machine learning algorithms as well. Spark, a modern framework to
+protect those applications while obtaining the wrong tolerance of MapReduce and
+the scalability, has been proposed in this study. In order to attain these aims, an
+abstraction called resilient distributed datasets (RDDs) is introduced by Spark. A
+read-only collection of objects segmented over a set of machines is an RDD, and
+if a segment and partition are lost, they can be re-established again. By 10 × in
+iterative machine learning tasks, Hadoop can be outperformed by Spark and with
+sub-second answer time can be applied to interactively a 39 GB query dataset.
+The results of this paper indicated the superiority of Spark.
+1 3
+Investigating the performance of Hadoop and Spark platforms…
+In 2014, Liang et al. [17] evaluated the platforms of Hadoop, Spark, and Big
+DataMPI in terms of runtime, memory, and CPU usage. In the current study, the
+author applies a big data benchmark suite, Big Data Bench, to perform thorough
+researches on resource utilization characterizations and performance of Spark, Data-
+MPI, and Hadoop. Over these experiments, everyone can study and view on task
+implementation time of DataMPI that has up to 50% and 57% speedups contrasted
+to those Spark and Hadoop, respectively. In DataMPI, the majority of profits were
+received by communication mechanisms and the high efficiency. Also, one can
+understand that the resource utilizations (disk, CPU, network I/O, and memory) of
+DataMPI are more effective than the two other structures and frameworks. According
+to their results, the MPI platform was better than Spark and Hadoop, and Spark
+was also better than the Hadoop.
+In 2014, Arabzadeh, in his thesis [18], “investigating performance bottlenecks
+for efficient implementation of MapReduce in Hadoop,” studied time consumed in
+different parts of the Hadoop platform. In order to understand the behavior of the
+platform and considering the bottlenecks for effective implementation, some of the
+criteria were simulated and analyzed. Mavridis and Karatza [19] did a research on
+Hadoop and Spark with log file analysis, and novelty of their research was the performance
+evaluation of log file analysis with Hadoop and Spark. In this paper, they
+have investigated log file analysis with the cloud computing frameworks Apache™
+Hadoop
+® and Apache Spark™. In both frameworks, the authors have improved the
+analysis of applications to realistic log file and in real Apache Web Server log files,
+SQL-type queries are carried out. Furthermore, with various parameters, they have
+led different experiments to compare and study the act and performance of the two
+structures and frameworks.
+Sungjin Im and Benjamin Moseley [20] conducted a project on graph connectivity
+in MapReduce to study conditional lower bound. In the current study, a project
+toward finding out problems has been done, by which they do not accept, in the
+MapReduce model, the effective algorithms. Through this research, whether a graph
+is connected or not is a basic question to determine. They focus on examples of this
+problem where, if a graph contains of two disconnected cycles or a single one, an
+algorithm is to identify. In this problem, every local part of the graph is same and
+similar and the purpose is to check the graph’s universal framework. They determine
+algorithms’ natural class that can transfer/store/process the data and information
+solely in the shape of paths which indicate that the question decision in a sublogarithmic
+number of rounds cannot be answered via no randomized algorithm.
+For meta-path categorization in heterogeneous information networks, a project
+on k-NN-based method applying MapReduce is carried out by Kodali et al. [21].
+Through this research, for discovering the k-nearest neighbors with the use of the
+famous MapReduce paradigm, the authors used PathSim similarity measure in a
+Heterogeneous Information Network in order to categorize the meta-paths. By using
+MapReduce, they deciphered the classification method which handles enormous
+data existing in the Heterogeneous Information Networks. In MapReduce, a project
+on computational scalable geometry has been done by Li et al. [22]. CG Hadoop
+that is introduced in this paper is a series of efficient and scalable algorithms of
+MapReduce for different basic computational geometry processing, specifically
+A. Mostafaeipour et al.
+1 3
+convex hull, polygon union, skyline, Voronoi diagram, closest pair and farthest pair,
+which indicate a complex of core elements for other geometric algorithms.
+A project on wireless distributed MapReduce processing is carried by Li et al.
+[23]. Over this study, they feature the basic trade-off between communication load
+and computation load, under the presumption of linear one-shot paradigms. The
+recommended paradigm is grounded on zero-forcing and side information cancelation,
+and with regard to communication–computation trade-off, they confirm that it
+is optimal. The recommended paradigm outperforms the coded TDMA paradigm
+that admits coding through data, and also the simple TDMA paradigm with singleknot
+transmission at a time regarding the communication–computation trade-off. A
+work on McTAR: a checkpointing multitrigger strategy for quick task recovery in
+MapReduce, is proposed by Liu et al. [24]. Through this study, they suggested a new
+checkpointing multitrigger method for quick recovery of MapReduce duties, called
+McTAR. As a finer-grained and better fault tolerance strategy, this McTAR applies
+push–pull combined intermediate data distribution, optimized failure task prediction
+tactics and multitrigger checkpoint generation together in order to establish the
+attempt of recovery task to be capable of beginning a special improvement in line
+with valid checkpoint for intermediate data. By this technique, McTAR could highly
+reduce the delay of task recovery and effectively speed up MapReduce tasks’ recovery
+processing.
+For Hadoop 2.x, a project on MapReduce performance model is performed by
+Glushkova et al. [25]. Through this research, there is a question and challenge of
+explaining MapReduce performance model for Hadoop 2.x. The suggested answer
+is focused on a present performance model for Hadoop 1.x, but keeping attention
+to obtain the implementation dream of both a MapReduce task and architectural
+changes via applying network queuing model. In this path, the synchronization
+intra-job constraints are reflected by the cost model because of the argument at
+shared sources. By comparison of our model calculations in contrast to assessment
+and measurements in a real Hadoop 2.x setup, the correctness of our answer is confirmed
+and validated.
+A project on managing big data over hybrid cloud employing MapReduce is
+performed by Saxena et al. [26]. A project on MapReduce/Hadoop basis platform
+for protecting big data health analysis is suggested by Kuo et al. [27]. Through this
+research, the useful experience in implementing and designing a platform with
+MapReduce/Hadoop structure for protecting big data health analysis is reported.
+A work on usage of HIVE tool in Hadoop eco system with loading data and
+user-defined functions was carried out by Kumar et al. [28]. The work explains the
+parameters involved in the processing of the data loading and working with UDFs
+so as to simplify the MapReduce (MR) process with HIVE commands. The context
+of MapReduce requires the complex coding skills, and the problems are only HDFS
+path is known to the MR and there is no approach of working with local file system.
+Alnasir and Shanahan [29], related to structural bioinformatics, proposed a work
+on the application of Hadoop. The use of the Hadoop platform in bioinformatics
+structural applications is reviewed in this study. Hadoop prepares a new framework
+for structural bioinformatics to estimate Protein Data Bank’s large fractions, which
+1 3
+Investigating the performance of Hadoop and Spark platforms…
+is core for high-throughput researches such as structural alignment, protein–ligand
+docking, and clustering of protein–ligand complexes.
+A proposed project by Park et al. [30] focused on large-scale connected component
+computation on Hadoop and Spark for connected component calculation
+and Partition-Aware Connected Components (PACC), based on three main tactics:
+sketching, edge filtering, and two-step process of computation and partitioning.
+Considerably, PACC decreases the number of rounds without distressing from load
+balancing concerns, the size of intermediate data, the size of input graph. Xu et al.
+[31] carried out the implementation and design of RSA distributed algorithm that
+focused on Hadoop. This research studies and designs encryption distributed RSA
+algorithm that focused on programming model and distributed file system. In the
+introduction part of this study, process control and module partition are performed
+to the whole, a design paradigm of distributed encryption algorithm focused on
+structure is suggested, the distribution of distributed algorithm is determined, and
+the distributed encryption operation and function of the single-computer encryption
+system is recognized. Lastly, the distributed encryption algorithm via large-scale
+distributed cluster built is examined by efficiency test, function test, and extensibility
+test.
+A work, in heterogeneous clusters, over utilization of energy task programming
+for MapReduce is carried out by Wang et al. [32]. In order to preserve energy costs
+in heterogeneous clusters, a task programming framework regarding resource utilization,
+deadlines, and data locality is suggested. The structure contains of slot list
+updating, task list construction, and task scheduling. A new job sequence is suggested
+to build a logical task list regarding probable processing times of jobs, number
+of job slots designated, and deadline constraints. A work on big dataset clustering
+approach that focused on MapReduce is carried out by Wei et al. [33]. In detail,
+the differences and similarities between the Canopy algorithm’s MapReduce execution
+and the K-means algorithm are explained. In this paper, the possibility of mixing
+the two abovementioned methods to draw a better algorithm appropriate for big
+data clustering analysis is estimated.
+Souza and Garcia [34] carried out a work on a preemptive fair scheduler policy
+for disco MapReduce framework. In this work, author described the implementation
+of the Preemptive Fair Scheduler Policy which improved largely our experimental
+production job execution time with a small impact on the research job. A research
+on input initialization for neural networks’ inversion applying k-nearest neighbor
+method was suggested by Jang et al. [35]. This research indicates a novel initialization
+approach for neural networks’ input variables that focused on (k-NN) k-nearest
+neighbor method. The suggested approach discovers inputs that derived, within a
+training dataset, an output next to a target output and mixes them to shape the variables
+of initial input.
+For big scale data that focused on kNN, Chen et al. [36] carried out swift peak of
+density clustering. The density with kNN-density is replaced by the suggested algorithm
+that is calculated by swift kNN algorithm like cover tree, giving enormous
+progress for the computations of density. Nonlocal density peaks and local density
+peaks are characterized based on kNN-density and a swift algorithm. For maximum
+cluster resource utilization, a research on optimum parallelism in Spark structure on
+A. Mostafaeipour et al.
+1 3
+Hadoop YARN was performed by Janardhanan and Samuel [37]. This study, regarding
+Apache Spark structure arranged on Hadoop YARN cluster, proposes optimum
+parallelism conformation and configuration. With regard to the performance of
+Spark applications, the suggestions are focused on the conclusions of the experiments
+which lead to assess parallelism’s dependency at each of these levels.
+Regarding Spark heterogeneous clusters, a research on zone-based resource allocation
+strategy was carried out by Qin et al. [38]. Focused on (ZbRAS) heterogeneous
+Spark cluster, author suggests a zone-based resource allocation strategy and
+executes this kind of strategy in order to progress the productivity of Spark. By
+applying MapReduce and Spark model structure, a research on the effective contentbased
+fast-response image retrieval was performed by Hussain and Surendran [39].
+The author employs a MapReduce model structure to sign and index the large-scale
+images, and Spark has been employed as a proportional approach of regaining the
+index that acts on MapReduce’s higher layer and (HDFS) Hadoop distributed file
+system environment.
+3 Methodology
+3.1 MapReduce
+The MapReduce model, introduced by Google in 2004, is a programming model for
+processing big datasets distributed across multiple machines. In this model, the big
+data are generally split into smaller units and processed in parallel. The MapReduce
+contains two main parts called map and reduce. The map part receives the input data
+in a key–value format and generates the output as intermediate key–value pairs by
+processing on them. The reduce part receives the output of the map part and merges
+the values with the same keys. The system automatically performs all the tasks such
+as how to divide input data, scheduling to run on a set of machines, managing and
+controlling machines that fail, and managing communications between devices at
+runtime [3]. The MapReduce model is shown in Fig. 5.
+3.2 Hadoop
+Hadoop is an open-source framework implemented in the Java programming language.
+Hadoop is inspired by Google’s distributed computing papers and the Google’s
+file system called GFS, which provides distributed processing on distributed
+datasets on connected computers using a simple programming model. Hadoop was
+first created by Doug Cutting to support the distributing of the search engine project.
+Hadoop scalability is from a server to thousands of machines with local memory,
+and CPU is a significant feature [40]. It is also capable of detecting and managing
+faults in the user layer, independent of hardware, and thus providing users with
+high-availability services. Today, Hadoop is used in many commercial projects such
+as Yahoo, IBM, Oracle, and Microsoft [4, 41]. It is essential to segment and partition
+a number of separated machines [42], while a dataset instantaneously develops
+1 3
+Investigating the performance of Hadoop and Spark platforms…
+the storehouse capacity of a physical single machine. File systems which handle the
+storehouse across a machines’ network are named distributed file systems. Hadoop
+related to a distributed file system is named Hadoop Distributed File System (HDFS)
+[43].
+3.2.1 Spark
+The Spark is an open-source framework for big data processing designed to increase
+speed, ease of use and for complex processing. This model was created in 2009 at
+Berkeley University and was recognized as one of the Apache’s projects in 2010.
+Recursive programs such as machine learning iterative algorithms, interactive data
+analysis tools, and graph algorithms should repeat a series of operations [44]. Therefore,
+a framework called Spark was designed so that it could support these programs
+as well as scalability and fault tolerance in the MapReduce model [5]. In order to
+employ Spark, a driver program which starts different operations in parallel and executes
+their application’s high-level control stream is written by developers. Spark
+produces two chief abstractions for parallel scheduling: parallel operations on these
+datasets (referring to pass a function to use a dataset) and resilient distributed datasets
+[45]. Spark introduced resilient distributed datasets (RDDs). RDD is a set of
+read-only objects that is divided among machines and can be easily restored if the
+division is eliminated. The user can cache the RDD on the machines’ memory and
+repeat the parallel operation like MapReduce several times. Therefore, Spark has
+Fig. 5 How MapReduce model works [3]
+A. Mostafaeipour et al.
+1 3
+significant performance in algorithms which can be processed recursively on a dataset
+[6, 46].
+3.3 Ganglia
+Ganglia was developed at the University of Berkeley under the license of BSD. It is
+a potent solution without utilizing resources to monitor cluster performance that can
+include several thousand nodes. Ganglia can evaluate the performance of various
+components of a system such as CPU, memory, I/O, network traffic, and disk. Ganglia
+consists of two main services called Gmond and Gmetad. The Gmond service
+is installed and run on each node to collect various parameters. The Gmetad service
+integrates the data collected by Gmond’s services, stores it in a database, and displays
+it to users through its Web service [13].
+3.4 Cluster architectures
+Our laboratory cluster consists of six computers as one is the master and others are
+slaves. Ubuntu 64-bit version 14.0.4 operating system has been used for all computers.
+The hardware specifications of all computers are the same and as follows: Intel
+Core i5-4440 3.10 GHz CPU, 4 GB total RAM, and 3.8 GB available RAM. All
+six computers have been connected by a switch to the model (D Link DSE1016A)
+at a rate of 100 Mbps in a local area network. Spark version 2.0.1, Hadoop version
+2.0.11, and ganglia version 3.6.2 have been used for all experiments. In all programs,
+their stable versions have been used. Figure 6 shows laboratory cluster topology.
+3.5 Dataset description
+In this paper, different versions of the Higgs dataset have been used. For a certain
+number of samples, as shown in Table 1, a new dataset was created from the beginning
+of the Higgs dataset. Higgs is a classification problem that deals with the distinction
+between the signal process and the background process that produces or
+does not produce Higgs bosons. The dataset contains 11 million samples in 28 features,
+which are measured by the Monte Carlo simulator. The first 21 features are
+particle motion properties that are measured by accelerator particle simulators, and
+the other seven features are obtained by the functions of the first 21 features. These
+high-level features are defined by physicists to distinguish between two class labels.
+In this paper, we divide the Higgs dataset into a smaller set of data to examine the
+datasets with different volumes and sizes. Table 1 shows the datasets with different
+sizes. Test data contain the last 500 samples from the Higgs dataset [47].
+3.6 Algorithm description
+In this section, we will examine one of the most important machine learning algorithms,
+i.e., K-nearest neighbor algorithm (KNN). KNN is one of the well-known
+classification algorithms, which has many applications in machine learning and
+1 3
+Investigating the performance of Hadoop and Spark platforms…
+data mining. KNN is a lazy algorithm because of the storage of input data and
+the lack of training phase. Also, given that no preconception is considered in
+input data, this method is a nonparametric method. KNN classifies a new example
+based on its similarity to training examples. In other words, KNN finds k-nearest
+neighbors of the unlabeled example and assigns the class label via majority voting
+of the label of the k-nearest neighbors.
+Fig. 6 An overview of laboratory cluster topology
+Table 1 Dataset Name Size Number of samples Number
+of
+features
+Class label
+Higgs 8 GB 11,000,000 28 2
+Higgs2 4 GB 5,500,000 28 2
+Higgs3 2 GB 2,750,000 28 2
+Higgs4 1 GB 1,375,000 28 2
+Higgs5 500 MB 687,500 28 2
+Higgs6 250 MB 343,750 28 2
+Higgs7 125 MB 171,875 28 2
+Higgs8 63 MB 85,937 28 2
+Higgs9 34 MB 43,000 28 2
+Higgs10 16 MB 21,000 28 2
+A. Mostafaeipour et al.
+1 3
+3.7 The rule of the nearest neighbors
+In this section, we will examine how the KNN algorithm works. We have a training
+dataset, all of which are labeled. KNN algorithm classifies a new unlabeled sample.
+It determines K-nearest neighbors of new sample in the training dataset according
+to the arbitrary distance metric, and then the new sample is classified by a majority
+vote of the class of its k-nearest neighbors. The KNN only uses training data to
+determine the label of new sample without creating a model at the learning stage,
+which makes it easy to implement [48].
+In the nearest neighbors’ algorithm, there is no training phase, and only the training
+samples and their labels are stored. We need three parameters in the classification
+phase with this method:
+• The value of K: K is a constant that is determined by the user. The label of a test
+sample is determined by a majority vote of the class of its k nearest neighbors in
+the training dataset.
+• Labeled dataset used as training data.
+• An appropriate metric for calculating the distance between two samples: In the
+KNN algorithm, several metrics can be used, but Euclidean distance is typical.
+3.8 Disadvantages of the KNN algorithm
+Despite the simplicity, the KNN algorithm has several weaknesses. Here are some
+of the disadvantages:
+• All training data should be stored in memory to classify a new sample; hence,
+the memory consumption is high. On the other hand, as the volume of the dataset
+increases, the KNN algorithm’s runtime increases as well [49].
+• High computational cost: each test sample has to be compared with all training
+samples. Hence, this algorithm has a high computational cost.
+• Data dependency: the KNN algorithm has a high dependency on all samples of
+the training dataset. As a result, it is very sensitive to noise. The results of the
+classification may differ greatly from optimal results.
+4 Results and discussion
+In this section, the results of the implementation of KNN machine learning algorithm
+on Hadoop and Spark platforms have been described. Several experiments
+have been performed to evaluate various parameters such as runtime, memory
+usage, CPU utilization, network utilization on Hadoop and Spark platforms.
+For each dataset, the KNN algorithm was implemented with K = 5 on the Higgs
+dataset on both the Hadoop and Spark platforms. In this test, the cluster configuration
+consists of six computers, one as master and the rest as slaves. Hadoop and
+1 3
+Investigating the performance of Hadoop and Spark platforms…
+Spark platforms have been evaluated and compared with a variety of parameters
+such as runtime, memory usage, CPU utilization and network utilization. All parameters
+have been recorded by Ganglia monitoring software [50]. The results are analyzed
+separately in the following sections.
+4.1 Comparison of the runtime
+Figure 7 shows the runtime of Hadoop and Spark platforms using the KNN machine
+learning algorithm on the Higgs dataset. The diagram indicates that Spark has runtime
+superior to the Hadoop. Spark has a 40 percent advantage over the Hadoop.
+4.2 Comparison of the memory usage
+Figure 8 shows memory usage of the Hadoop and Spark platforms using the KNN
+algorithm on the Higgs dataset. The results indicate that memory usage in Spark
+is several times higher than that of Hadoop, so Hadoop has superiority to Spark.
+The Spark’s higher memory usage can be attributed to the in-memory programming
+model, because it keeps all data and intermediate results in memory. Figure 8
+illustrates that maximum usage for Spark occurs for running times of between 120
+and 660 Gigabytes. But, maximum usage for Hadoop occurs for running times of
+between 100 and 570 Gigabytes.
+4.3 Comparison of the CPU utilization
+Figure 9 shows CPU utilization on both the Hadoop and Spark platforms using the
+KNN algorithm on the Higgs dataset. The results indicate that the CPU usage on
+the Hadoop is several times higher than that of Spark, so Spark has superiority to
+Hadoop. CPU utilization in two platforms is related to their runtime, so that there
+is a direct relationship between the amount of CPU usage and runtime. On the other
+Fig. 7 Runtime comparison of the cluster on KNN algorithm
+A. Mostafaeipour et al.
+1 3
+hand, due to the Spark programming model, its runtime is lower than the Hadoop,
+resulting in lower CPU utilization. Figure 9 illustrates the CPU utilization comparison
+of clusters on KNN algorithm where the maximum usage for Spark occurs
+for running times of between 60 and 120 Gigabytes. However, maximum usage for
+Hadoop occurs between 60 and 720 Gigabytes.
+4.4 Comparison of the network usage
+Figures 10 and 11 show the network usage in both the Hadoop and Spark platforms
+using the KNN algorithm on the Higgs dataset. The network utilization
+has been evaluated in terms of two parameters: network input and output. It is
+obvious that on the average and in the whole implementation of the program, the
+Fig. 8 Memory usage comparison of the cluster on KNN algorithm
+Fig. 9 CPU utilization comparison of the cluster on KNN algorithm
+1 3
+Investigating the performance of Hadoop and Spark platforms…
+network usage in the Hadoop is higher than Spark. Hadoop must read all data
+from the HDFS file system and should store the middle results on it [51]. For this
+purpose, the data should be stored in different nodes to the number of repetitions,
+thus increasing the amount of network usage. Spark, on the other hand, keeps the
+middle results in memory and does not store data on HDFS until it is compelled.
+Hence, Spark will increase network usage at times when it reads or stores data
+on HDFS. But in general, the network usage in the Hadoop is higher than Spark.
+Figure 10 illustrates the network input comparison of both Hadoop and spark
+on KNN algorithm [52]. As shown in Fig. 10, Hadoop occurs for the maximum
+peak on running times of between 480 and 580 Gigabytes. However, Spark occurs
+between 600 and 630 Gigabytes. From Fig. 11, the network output comparison of
+both Hadoop and Spark is provided. The Spark maximum peak on running time is
+Fig. 10 Network input comparison of the cluster on KNN algorithm
+Fig. 11 Network output comparison of the cluster on KNN algorithm
+A. Mostafaeipour et al.
+1 3
+found between 30 to 60 Gigabytes. The Hadoop running time was found between
+480 and 600 Gigabytes (Fig. 11).
+4.5 Change in the size of the datasets
+Figure 12 represents the runtime comparison of Hadoop and Spark in the dataset
+with different sizes on the KNN algorithm with the k value of 5. Here, Hadoop
+and Spark on a totally different size of data can be used to measure Spark’s
+advantage over the Hadoop at program execution time.
+For each dataset, the KNN algorithm with k = 5 was executed on the Hadoop
+and Spark Platforms, respectively, and then the runtime for each dataset is
+recorded. However, while the KNN algorithm was running on both the Hadoop
+and Spark platforms, the Ganglia software evaluated the amount of memory utilization
+and the efficiency of the processor for the laboratory cluster which were
+recorded and stored [53–55]. In order to make a fair comparison, the value of K is
+considered to be a constant, and the converged value of each dataset is not used.
+Given the structural features of Hadoop and Spark and the KNN algorithm, the
+following results can be obtained:
+When the dataset, such as the Higgs10, is small, the Spark has a better performance
+than the Hadoop, so that the Spark performance is improved from 4.5 to 5
+times the Hadoop. On the other hand, when the size of the dataset increases, such
+as the Higgs, Spark’s advantage over the Hadoop is reduced so that it is 1.5 to 2
+times better than the Hadoop.
+In general, the Hadoop is not suitable for small processing. In contrast, Spark
+runs fast to process such datasets.
+Fig. 12 Comparison of runtime in datasets with different sizes on the KNN algorithm with k = 5
+1 3
+Investigating the performance of Hadoop and Spark platforms…
+4.6 Change in cluster configuration
+This section presents the results of the evaluation of Hadoop and Spark platforms
+with different configurations, which was done by changing the number of nodes in
+the cluster. For this evaluation, the KNN algorithm was executed on the Higgs dataset
+using Hadoop and Spark with different configurations and the running time was
+measured by the software Ganglia. Figure 13 illustrates the results of the execution
+of the two platforms with different number of nodes in the cluster. It can be seen that
+as the number of nodes in the cluster increased, the running time decreased. This
+is because increasing the number of nodes allows for more resource utilization in
+the cluster for parallel task execution, which accelerates the processing and reduces
+the running time. Considering the structure of the two platforms, where internode
+links and coordination increase with the number of nodes, it had to be checked that
+whether increasing the number of nodes necessarily reduces the running time for
+all data. To investigate this issue, the above-described test was repeated on the relatively
+small Higgs10 dataset. The results of this test are presented in Fig. 13. As
+this figure shows, it was observed that the optimal number of nodes in the cluster
+is directly related to the size of the dataset and the executed algorithm. In other
+words, if the number of nodes in the cluster is not proportional to the size of the
+dataset, increasing the number of nodes will actually increase the running time: an
+outcome that can be attributed to increased complexity and internode linking and
+coordination.
+4.7 Change in k‑value of the KNN algorithm
+In the above tests, to make sure that comparisons are fair, k-value of the KNN algorithm
+was fixed at k = 5 (nonconvergent). In this test, the KNN algorithm was executed
+with different k values on the Higgs dataset on both Hadoop and Spark and the
+resulting running times were compared. As shown in Fig. 14, k value showed little
+Fig. 13 Running time for execution with different numbers of nodes in the cluster
+A. Mostafaeipour et al.
+1 3
+effect on the running time. This can be attributed to the code written for the KNN
+algorithm, because as k value increases, only a small amount of time is spent to save
+this value, which is negligible compared to the total running time.
+4.8 Assessment of the nodes in the cluster
+This section presents an analysis of each individual node in the cluster in terms
+of memory usage, CPU utilization, and network usage, in Hadoop and Spark platforms.
+For this assessment, the KNN algorithm was executed on the Higgs dataset
+on Hadoop and Spark platforms and the performance parameters of interest for each
+node were monitored by the software Ganglia. The results obtained from this assessment
+are discussed in the following.
+4.8.1 Assessment of memory usage of the nodes in the cluster
+This subsection presents the results obtained from the monitoring of memory usage
+of each node in the cluster. Figure 15 shows the memory usage of each node in the
+Spark cluster. As can be seen, in the Spark cluster, all slave nodes used almost all of
+their memory capacity and had the same amount of memory usage throughout the
+execution. The master node in this cluster used less memory than other nodes in the
+cluster. In Spark, the average memory usage of the slave nodes was 1.5 times that of
+the master node. Figure 16 displays the memory usage of the nodes in the Hadoop
+cluster. As this figure shows, this master node also used less memory than the slave
+nodes. The average memory usage of slave nodes in this cluster was 1.3 times that
+of the master node. In Hadoop, although different slave nodes had different memory
+usage rates toward the end of the execution, they had almost the same total memory
+usage. The results showed that Spark had generally higher memory usage than
+Hadoop. In both Spark and Hadoop, the master nodes had lower memory usage than
+Fig. 14 Effect of k value of the KNN algorithm on the running time
+1 3
+Investigating the performance of Hadoop and Spark platforms…
+other nodes in those clusters. This means that in data centers with these platforms,
+low-memory computers can be used as the master node.
+4.8.2 Assessment of CPU utilization of the nodes in the cluster
+This subsection analyzes the CPU utilization of the nodes in the cluster. Figure 17
+shows the CPU utilization of each node in the Hadoop cluster as a percentage of
+Fig. 15 Memory usage of the nodes in the Spark cluster
+Fig. 16 Memory usage of the nodes in the Hadoop cluster
+A. Mostafaeipour et al.
+1 3
+total CPU capacity. As can be seen, in Hadoop, the master node had lower CPU
+utilization than the slave nodes. Figure 18 shows the percentage of CPU utilization
+in the nodes of the Spark cluster. In Spark, the slave nodes had highly similar
+rates of CPU utilization throughout the execution of the program. Also, the master
+node had lower CPU utilization than other nodes in the cluster.
+Fig. 17 CPU utilization of the nodes in the Hadoop cluster
+Fig. 18 CPU utilization of the nodes in the Spark cluster
+1 3
+Investigating the performance of Hadoop and Spark platforms…
+4.8.3 Assessment of network usage of the nodes in the cluster
+In this section, the network usage of the nodes in the cluster in Hadoop and Spark
+is analyzed. The network usage of each node was evaluated based on two criteria:
+the incoming traffic (network input) and the outgoing traffic (network output).
+Figure 19 shows the network input, and Fig. 20 shows the network output of the
+nodes in the Hadoop cluster. In Hadoop, the master node had a higher network
+input and lower network output than all other nodes. This master node received
+Fig. 19 Network input of the nodes in the Hadoop cluster
+Fig. 20 Network output of the nodes in the Hadoop cluster
+A. Mostafaeipour et al.
+1 3
+about 71% of the total outgoing traffic of the slave nodes in the cluster. The network
+input and output of the nodes in the Spark cluster are shown in Figs. 21 and
+22, respectively. In the Spark cluster, like in Hadoop, the master node had the
+highest network input and the lowest network output among all nodes. Based on
+these results, it can be concluded that the total network usage in the Hadoop cluster
+is higher than in the Spark cluster. Also, in both Hadoop and Spark, the master
+node has a higher network usage than all other nodes in the same cluster.
+Fig. 21 Network input of the nodes in the Spark cluster
+Fig. 22 Network output of the nodes in the Spark cluster
+1 3
+Investigating the performance of Hadoop and Spark platforms…
+5 Conclusions
+The growth and expansion of the volume of information has become a unique
+phenomenon. Analyzing and storing such a large amount of information requires
+new ideas that can process and manage this volume of information. All fields are
+interested in big data because of its great potential. Many government agencies
+have announced their plans to accelerate research in big data and its applications.
+In this paper, Spark and Hadoop frameworks have been examined. To evaluate
+the performance of these platforms, several experiments have been conducted
+using the KNN algorithm. Given the structural features of Hadoop and Spark and
+the KNN algorithm implementation, the following results can be noted:
+• When the dataset, such as the Higgs10, is small, the Spark has a better performance
+than the Hadoop, so that the Spark performance is improved by 4.5 to
+5 times than Hadoop. On the other hand, the larger dataset, such as the Higgs,
+reduces Spark’s advantage over the Hadoop, which is 1.5 to 2 times higher
+than the Hadoop.
+• Hadoop is not suitable for processing small datasets. Spark, in contrast, is
+appropriate for processing such datasets.
+• Spark’s ability to hold data in memory makes it suitable for iterative algorithms.
+This saves I/O of intermediate results, which is a large part of the time
+wasted on the Hadoop.
+• In terms of memory usage, the Hadoop consumes less memory than Spark.
+Although Spark is generally faster than the Hadoop, it consumes significant
+memory. Spark is a good choice if the speed is needed and there is enough
+memory, but if we do not have enough memory to store and maintain data and
+intermediate results, the Hadoop can be a good choice. In the evaluation of the
+CPU and the network usage, Hadoop uses more these resources than Spark.
+• Figure 19 shows the network input and Fig. 20 shows the network output of
+the nodes in the Hadoop cluster. In Hadoop, the master node had a higher network
+input and lower network output than all other nodes. This master node
+received about 71% of the total outgoing traffic of the slave nodes in the cluster.
+• Based on these results, it can be concluded that the total network usage in the
+Hadoop cluster is higher than in the Spark cluster. Also, in both Hadoop and
+Spark, the master node has a higher network usage than all other nodes in the
+same cluster.
+References
+1. Chen M, Mao S, Liu Y (2014) Big data: a survey. Mob Netw Appl 19(2):171–209
+2. Wu C, Zapevalova E, Chen Y, Zeng D, Liu F (2018) Optimal model of continuous knowledge transfer
+in the big data environment. Computr Model Eng Sci 116(1):89–107
+A. Mostafaeipour et al.
+1 3
+3. Dean J, Ghemawat S (2008) MapReduce: simplified data processing on large clusters. Commun
+ACM 51(1):107–113
+4. Tang Z, Jiang L, Yang L, Li K, Li K (2015) CRFs based parallel biomedical named entity recognition
+algorithm employing MapReduce framework. Clust Comput 18(2):493–505
+5. Tang Z, Liu K, Xiao J, Yang L, Xiao Z (2017) A parallel k-means clustering algorithm based on
+redundance elimination and extreme points optimization employing MapReduce. Concurr Comput
+Pract Exp 29(20):e4109
+6. Zaharia M, Chowdhury M, Das T, Dave A, Ma J, McCauly M, Michael J, Franklin SS, Stoica I
+(2012) Resilient distributed datasets: a fault-tolerant abstraction for in-memory cluster computing.
+In: Presented as Part of the 9th {USENIX} Symposium on Networked Systems Design and
+Implementation ({NSDI} 12), pp 15–28
+7. Cobb AN, Benjamin AJ, Huang ES, Kuo PC (2018) Big data: more than big data sets. Surgery
+164(4):640–642
+8. Qin SJ, Chiang LH (2019) Advances and opportunities in machine learning for process data analytics.
+Comput Chem Eng 126:465–473
+9. Jordan MI, Mitchell TM (2015) Machine learning: trends, perspectives, and prospects. Science
+349(6245):255–260
+10. Wu C, Zapevalova E, Li F, Zeng D (2018) Knowledge structure and its impact on knowledge
+transfer in the big data environment. J Internet Technol 19(2):581–590
+11. Zhou L, Pan S, Wang J, Vasilakos AV (2017) Machine learning on big data: opportunities and
+challenges. Neurocomputing 237:350–361
+12. Russell SJ, Norvig P (2016) Artificial intelligence: a modern approach. Pearson Education Limited,
+Kuala Lumpur
+13. Aziz K, Zaidouni D, Bellafkih M (2018) Real-time data analysis using Spark and Hadoop. In:
+2018 4th International Conference on Optimization and Applications (ICOA). IEEE, pp 1–6
+14. Hazarika AV, Ram GJSR, Jain E (2017) Performance comparison of Hadoop and spark engine.
+In: 2017 International Conference on I-SMAC (IoT in Social, Mobile, Analytics and Cloud)
+(I-SMAC). IEEE, pp 671–674
+15. Gopalani S, Arora R (2015) Comparing apache spark and map reduce with performance analysis
+using k-means. Int J Comput Appl 113(1):8–11
+16. Wang H, Wu B, Yang S, Wang B, Liu Y (2014) Research of decision tree on yarn using mapreduce
+and Spark. In: Proceedings of the 2014 World Congress in Computer Science, Computer
+Engineering, and Applied Computing, pp 21–24
+17. Liang F, Feng C, Lu X, Xu Z (2014) Performance benefits of DataMPI: a case study with Big-
+DataBench. In: Workshop on Big Data Benchmarks, Performance Optimization, and Emerging
+Hardware. Springer, Cham, pp 111–123
+18. Pirzadeh P (2015) On the performance evaluation of big data systems. Doctoral dissertation, UC
+Irvine
+19. Mavridis I, Karatza H (2017) Performance evaluation of cloud-based log file analysis with
+Apache Hadoop and Apache Spark. J Syst Softw 125:133–151
+20. Im S, Moseley B (2019) A conditional lower bound on graph connectivity in mapreduce. arXiv
+preprint arXiv :1904.08954
+21. Kodali S, Dabbiru M, Rao BT, Patnaik UKC (2019) A k-NN-based approach using MapReduce
+for meta-path classification in heterogeneous information networks. In: Soft Computing in Data
+Analytics. Springer, Singapore, pp 277–284
+22. Li Y, Eldawy A, Xue J, Knorozova N, Mokbel MF, Janardan R (2019) Scalable computational
+geometry in MapReduce. VLDB J 28(4):523–548
+23. Li F, Chen J, Wang Z (2019) Wireless MapReduce distributed computing. IEEE Trans Inf Theory
+65(10):6101–6114
+24. Liu J, Wang P, Zhou J, Li K (2020) McTAR: a multi-trigger check pointing tactic for fast task
+recovery in MapReduce. IEEE Trans Serv Comput. https ://doi.org/10.1109/TSC.2019.29042 70
+25. Glushkova D, Jovanovic P, Abelló A (2019) Mapreduce performance model for Hadoop 2.x. Inf
+Syst 79:32–43
+26. Saxena A, Chaurasia A, Kaushik N, Kaushik N (2019) Handling big data using MapReduce
+over hybrid cloud. In: International Conference on Innovative Computing and Communications.
+Springer, Singapore, pp 135–144
+27. Kuo A, Chrimes D, Qin P, Zamani H (2019) A Hadoop/MapReduce based platform for supporting
+health big data analytics. In: ITCH, pp 229–235
+1 3
+Investigating the performance of Hadoop and Spark platforms…
+28. Kumar DK, Bhavanam D, Reddy L (2020) Usage of HIVE tool in Hadoop ECO system with
+loading data and user defined functions. Int J Psychosoc Rehabil 24(4):1058–1062
+29. Alnasir JJ, Shanahan HP (2020) The application of hadoop in structural bioinformatics. Brief
+Bioinform 21(1):96–105
+30. Park HM, Park N, Myaeng SH, Kang U (2020) PACC: large scale connected component computation
+on Hadoop and Spark. PLoS ONE 15(3):e0229936
+31. Xu Y, Wu S, Wang M, Zou Y (2020) Design and implementation of distributed RSA algorithm
+based on Hadoop. J Ambient Intell Humaniz Comput 11(3):1047–1053
+32. Wang J, Li X, Ruiz R, Yang J, Chu D (2020) Energy utilization task scheduling for MapReduce
+in heterogeneous clusters. IEEE Trans Serv Comput. https ://doi.org/10.1109/TSC.2020.29666 97
+33. Wei P, He F, Li L, Shang C, Li J (2020) Research on large data set clustering method based on
+MapReduce. Neural Comput Appl 32(1):93–99
+34. Souza A, Garcia I (2020) A preemptive fair scheduler policy for disco MapReduce framework.
+In: Anais do XV Workshop em Desempenho de Sistemas Computacionais e de Comunicação.
+SBC, pp 1–12
+35. Jang S, Jang YE, Kim YJ, Yu H (2020) Input initialization for inversion of neural networks using
+k-nearest neighbor approach. Inf Sci 519:229–242
+36. Chen Y, Hu X, Fan W, Shen L, Zhang Z, Liu X et al (2020) Fast density peak clustering for large
+scale data based on kNN. Knowl-Based Syst 187:104824
+37. Janardhanan PS, Samuel P (2020) Optimum parallelism in Spark framework on Hadoop YARN
+for maximum cluster resource. In: First International Conference on Sustainable Technologies
+for Computational Intelligence: Proceedings of ICTSCI 2019, vol 1045. Springer Nature, p 351
+38. Qin Y, Tang Y, Zhu X, Yan C, Wu C, Lin D (2020) Zone-based resource allocation strategy
+for heterogeneous spark clusters. In: Artificial Intelligence in China. Springer, Singapore, pp
+113–121
+39. Hussain DM, Surendran D (2020) The efficient fast-response content-based image retrieval
+using spark and MapReduce model framework. J Ambient Intell Humaniz Comput. https ://doi.
+org/10.1007/s1265 2-020-01775 -9
+40. Nguyen MC, Won H, Son S, Gil MS, Moon YS (2019) Prefetching-based metadata management
+in advanced multitenant Hadoop. J Supercomput 75(2):533–553
+41. Javanmardi AK, Yaghoubyan SH, Bagherifard K et al (2020) A unit-based, cost-efficient scheduler
+for heterogeneous Hadoop systems. J Supercomput. https ://doi.org/10.1007/s1122 7-020-
+03256 -4
+42. Guo A, Jiang A, Lin J, Li X (2020) Data mining algorithms for bridge health monitoring:
+Kohonen clustering and LSTM prediction approaches. J Supercomput 76(2):932–947
+43. Cheng F, Yang Z (2019) FastMFDs: a fast, efficient algorithm for mining minimal functional
+dependencies from large-scale distributed data with Spark. J Supercomput 75(5):2497–2517
+44. Kang M, Lee J (2020) Effect of garbage collection in iterative algorithms on Spark: an experimental
+analysis. J Supercomput. https ://doi.org/10.1007/s1122 7-020-03150 -z
+45. Xiao W, Hu J (2020) SWEclat: a frequent itemset mining algorithm over streaming data using
+Spark Streaming. J Supercomput. https ://doi.org/10.1007/s1122 7-020-03190 -5
+46. Massie M, Li B, Nicholes B, Vuksan V, Alexander R, Buchbinder J, Costa F, Dean A, Josephsen
+D, Phaal P, Pocock D (2012) Monitoring with Ganglia: tracking dynamic host and application
+metrics at scale. O’Reilly Media Inc, Newton
+47. Whiteson D (2014) Higgs data set. https ://archi ve.ics.uci.edu/ml/datas ets/HIGGS . Accessed
+2016
+48. Harrington P (2012) Machine learning in action. Manning Publications Co, New York
+49. Masarat S, Sharifian S, Taheri H (2016) Modified parallel random forest for intrusion detection
+systems. J Supercomput 72(6):2235–2258
+50. Lai WK, Chen YU, Wu TY, Obaidat MS (2014) Towards a framework for large-scale multimedia
+data storage and processing on Hadoop platform. J Supercomput 68(1):488–507
+51. Won H, Nguyen MC, Gil MS, Moon YS, Whang KY (2017) Moving metadata from ad hoc
+files to database tables for robust, highly available, and scalable HDFS. J Supercomput
+73(6):2657–2681
+52. Lee ZJ, Lee CY (2020) A parallel intelligent algorithm applied to predict students dropping out
+of university. J Supercomput 76(2):1049–1062
+A. Mostafaeipour et al.
+1 3
+53. Sandrini M, Xu B, Volochayev R, Awosika O, Wang WT, Butman JA, Cohen LG (2020) Transcranial
+direct current stimulation facilitates response inhibition through dynamic modulation of
+the fronto-basal ganglia network. Brain Stimul 13(1):96–104
+54. Jiang W, Fu J, Chen F, Zhan Q, Wang Y, Wei M, Xiao B (2020) Basal ganglia infarction after
+mild head trauma in pediatric patients with basal ganglia calcification. Clin Neurol Neurosurg
+192:105706
+55. Kowalski CW, Lindberg JE, Fowler DK, Simasko SM, Peters JH (2020) Contributing mechanisms
+underlying desensitization of CCK-induced activation of primary nodose ganglia neurons. Am J
+Physiol Cell Physiol 318:C787–C796
+Publisher’s Note Springer Nature remains neutral with regard to jurisdictional claims in published
+maps and institutional affiliati
