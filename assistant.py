@@ -10,12 +10,14 @@ import pyautogui
 import win32com.client
 import pyttsx3 as tts
 from pyllamacpp.model import Model
-
+from dotenv import load_dotenv
 
 class Assistant():
     def __init__(self):
         self.recognizer = sr.Recognizer()
         self.speaker = tts.init()
+
+        load_dotenv()
 
     
     # Capture voice input from user and uses speech_recognition library to capture words spoken as text
@@ -112,11 +114,11 @@ class Assistant():
     # Weather
     # -------------------------------------------------------------------------------------------------
     def weather(self, city):
-        api_key = '38af91f97ea3a0243ec6cb45019bfb4d'
+        weather_api = os.environ.get("WEATHER_API_KEY")
 
         if city != 0:
 
-            url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
+            url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={weather_api}&units=metric"
 
             response = requests.get(url)
 
@@ -205,7 +207,7 @@ class Assistant():
 
     # Using wolframalpha API
     def calculate(self, question):
-        app_id="4YVHWL-29XPVVGXQP"
+        app_id = os.environ.get("WOLFRAMALPHA_API_KEY")
         client = wolframalpha.Client(app_id)
         res = client.query(question)
         answer = next(res.results).text
