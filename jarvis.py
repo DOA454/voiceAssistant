@@ -14,7 +14,7 @@ import pyttsx3 as tts
 import tkinter as tk
 import threading
 from assistant import Assistant
-
+from dotenv import load_dotenv
 
 class Jarvis():
     def __init__(self, root):
@@ -32,12 +32,14 @@ class Jarvis():
 
         self.notepad_button = tk.Button(self.root, text="Readme", command=self.open_notepad_file)
         self.notepad_button.pack()
+
+        load_dotenv()
     
     def stop(self):
         self.running = False
 
     def open_notepad_file(self):
-        file_path = r"C:\Users\danie\Documents\MNSU\Spring 2023\CIS 630\projectcode\Readme.txt"  # Replace with your file path
+        file_path = os.environ.get("README")  # Replace with your file path
         os.startfile(file_path)
         
     # -------------------------------------------------------------------------------------------------
