@@ -1,8 +1,8 @@
 ## Color Representation:
 
-BLUE : It awakes and does  greetings.\n
-ORANGE: Assistant is listening\n
-GREEN : Assistant is executing a command\n
+BLUE : It awakes and does  greetings.
+ORANGE: Assistant is listening
+GREEN : Assistant is executing a command
 
 
 Commands:
