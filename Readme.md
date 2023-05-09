@@ -62,7 +62,7 @@ Restart: "Restart" will restart the system
 
 #### LLM
 
-GPT-J : "Ask anything any prompts" will answer questions with few lines of answers.
+Llama : "Ask anything any prompts" will answer questions with few lines of answers.
 
 
 
