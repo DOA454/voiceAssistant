@@ -238,7 +238,7 @@ class Assistant():
     # Enabling the assistant with LLM capabilities using a locally available pretrained GPT quantized model
 
     def GPT(self, prompt):
-        model = Model(r'C:\Users\danie\GPT4All\gpt4all-model.bin')
+        model = Model(r'C:\Users\GPT4All\gpt4all-model.bin')
         self.say("Getting the information for you")
         response = model.generate(prompt, n_predict=55, n_threads=10)
         self.say(response)
