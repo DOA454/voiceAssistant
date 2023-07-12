@@ -238,7 +238,9 @@ class Assistant():
     # Enabling the assistant with LLM capabilities using a locally available pretrained GPT quantized model
 
     def GPT(self, prompt):
-        model = Model(r'C:\Users\GPT4All\gpt4all-model.bin')
+        current_directory = os.getcwd()
+        model_path = os.path.join(current_directory, 'model','ggml-gpt4all-l13b-snoozy.bin')
+        model = Model(model_path)
         self.say("Getting the information for you")
         response = model.generate(prompt, n_predict=55, n_threads=10)
         self.say(response)
