@@ -1,5 +1,5 @@
 # Voice Assistant
-Voice assistant for Windows OS that executes a set of limited voice commands. Integrated with a LLM model that adds flexibility to the range of responses the assistant offers.
+Voice assistant for Windows OS that executes a set of limited voice commands. Integrated with an LLM model that adds flexibility to the range of responses the assistant offers.
 
 
 
